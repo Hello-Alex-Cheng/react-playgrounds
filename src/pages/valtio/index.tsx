@@ -12,6 +12,7 @@ import {
   synchronouslyDrive,
 } from './state'
 import { useSnapshot, subscribe } from 'valtio'
+import { auth } from '@/config/firebase'
 import CodeBlock from '@/components/CodeBlock'
 import styles from './index.module.less'
 
@@ -37,6 +38,7 @@ const Index = () => {
       </CodeBlock>
       <div>
         <Button onClick={() => {
+          console.log('auth ', auth.currentUser)
           USER_STATE.updateAge(Math.random())
         }}>修改 age</Button>
         <Button onClick={() => {

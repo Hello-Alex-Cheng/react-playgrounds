@@ -93,6 +93,25 @@ console.log(auth.currentUser)
 console.log(auth.currentUser?.photoURL)
 ```
 
+## 每次刷新页面 auth 对象为 null?
+
+当导航到新页面时，正在重新加载 `Firebase` 身份验证 SDK。此时 Firebase 会自动刷新当前用户的身份验证状态，但这可能需要往返服务器。我们使用 `firebase.auth.currentUser` 获取当前登录人信息，刷新显然还没有完成。
+
+出于这个原因，应该使用`onAuthStateChange`来监听更改，如获取当前登录用户的文档中所示：
+
+```js
+import { auth } from '../config/firebase'
+import { User } from 'firebase/auth'
+
+useEffect(() => {
+  const unsubscribe = auth.onAuthStateChanged((user: User | null) => {
+    setUserinfo(user)
+  })
+
+  return () => unsubscribe()
+}, [])
+```
+
 # Firestore Database
 
 尽量使用 `Firestore Database`，而不是 `Realtime Database`

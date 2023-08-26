@@ -6,15 +6,15 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Breadcrumb, Layout, Menu } from 'antd';
-import React, { useState } from 'react';
+import { Breadcrumb, Layout, Menu, Dropdown, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import styles from './index.module.less'
+import { auth } from '../config/firebase'
+import { User } from 'firebase/auth'
 
 const { Header, Content, Footer, Sider } = Layout;
-
 type MenuItem = Required<MenuProps>['items'][number];
-
 function getItem(
   label: React.ReactNode,
   key: React.Key,
@@ -41,8 +41,22 @@ const items: MenuItem[] = [
   getItem('Files', '9', <FileOutlined rev={''} />),
 ];
 
+const userItems = [
+  getItem('Logout', 'logout'),
+]
+
 const App: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [userinfo, setUserinfo] = useState<User | null>(null)
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user: User | null) => {
+      console.log('auth user', user)
+      setUserinfo(user)
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -51,7 +65,21 @@ const App: React.FC = () => {
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>
       <Layout className="site-layout">
-        <Header className="site-layout-background" style={{ padding: 0, backgroundColor: '#69c' }} />
+        <Header
+          className="site-layout-background"
+          style={{
+            padding: '0 12px',
+            backgroundColor: '#69c',
+            textAlign: 'right'
+          }}>
+          <Dropdown
+            menu={{items: userItems}}
+            placement="bottom"
+            arrow
+          >
+            <Button size='small'>Hi,{auth.currentUser?.displayName || '请登录'}</Button>
+          </Dropdown>
+        </Header>
         <Content style={{ margin: '0 16px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
