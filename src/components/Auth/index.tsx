@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Button,
   Checkbox,
@@ -6,24 +6,23 @@ import {
   Input,
   message,
 } from 'antd'
+import { CheckboxChangeEvent } from 'antd/lib/checkbox'
+
 import { GoogleCircleFilled } from '@ant-design/icons'
 import {
   createUserWithEmailAndPassword,
   signOut,
   signInWithPopup,
+  User
 } from 'firebase/auth'
-import { auth, googleProvider } from '../../config/firebase'
-import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
-type Form_Values = {
-  email: string;
-  password: string;
-  remember: boolean;
-}
+import { auth, googleProvider } from '../../config/firebase'
+import { useLocation, useNavigate, Navigate } from 'react-router-dom'
+import { Form_Values, IUserinfo } from './interface'
 
 export default function Auth() {
-
   const [render, setRender] = useState(true)
+  const navigate = useNavigate()
 
   const onRememberChanged = (e: CheckboxChangeEvent) => {
     setRender(e.target.checked)
@@ -47,9 +46,19 @@ export default function Auth() {
     console.log('Failed:', errorInfo);
   }
 
+  interface Iuserinfo extends User { accessToken?: string; }
+
   const signInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider)
+      const userinfo: Iuserinfo | null = auth.currentUser
+      console.log('signInWithGoogle user info ', auth.currentUser)
+
+      if (userinfo && userinfo.accessToken) {
+        localStorage.setItem('token', userinfo.accessToken)
+        navigate('/')
+      }
+
     } catch (error: any) {
       message.error(error.message)
     }
@@ -58,13 +67,24 @@ export default function Auth() {
   const logout = async () => {
     try {
       await signOut(auth)
+      localStorage.removeItem('token')
+      navigate('/login')
     } catch (error: any) {
       message.error(error.message)
     }
   }
 
-  console.log(auth.currentUser)
-  console.log(auth.currentUser?.photoURL)
+  useEffect(() => {
+    console.log(auth.currentUser)
+  }, [render])
+
+  const location = useLocation()
+  const token = localStorage.getItem('token')
+  const from = location.state?.from?.pathname || '/'
+
+  if (token) {
+    return <Navigate to={from} replace />
+  }
 
   return (
     <div style={{

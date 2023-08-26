@@ -21,6 +21,7 @@ import Baisc from './pages/ReactRouterDOMDemo/Basic'
 import BasicDataRouter from './pages/ReactRouterDOMDemo/BasicDataRouter'
 
 import Auth from '@/components/Auth'
+import PrivateRoute from '@/components/PrivateRoute'
 
 import User from './pages/User'
 import UserDetail from './pages/User/details'
@@ -36,7 +37,11 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path='/' element={<Navigate to='/react-router-dom'/>} />
-      <Route path='/' element={<LayoutComp />}>
+      <Route
+        path='/'
+        element={<PrivateRoute>
+          <LayoutComp />
+        </PrivateRoute>}>
         {/* 子路由 */}
         <Route path='react-router-dom' element={<ReactRouterDOMDemo />}>
           <Route path='' element={<Navigate to='/react-router-dom/basic'/>} />
