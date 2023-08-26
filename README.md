@@ -116,6 +116,58 @@ useEffect(() => {
 
 尽量使用 `Firestore Database`，而不是 `Realtime Database`
 
+`create database`
+
+`start collection`
+
+为了方便查看效果，我们先手动创建一条数据。`add document`
+
+然后我们到 `config/firebase` 中配置 `db`
+
+```js
+// connect db
+import { getFirestore } from 'firebase/firestore'
+export const db = getFirestore(app)
+```
+
+去组件中使用
+
+```js
+import { db } from '@/config/firebase'
+import { getDocs, collection } from 'firebase/firestore'
+
+const getMovieList = async () => {
+  const movieCollectionRef = collection(db, 'movies')
+  const data = await getDocs(movieCollectionRef)
+
+  console.log(data)
+}
+
+useEffect(() => {
+  getMovieList()
+}, [])
+```
+
+此时我们刷新页面，很有可能拿不到数据，因为当我们创建数据库时，没有开放权限。`Uncaught (in promise) FirebaseError: Missing or insufficient permissions.`
+
+我们回到 firebase 数据库中，修改 rule，修改后 `发布`。
+```js
+// rule
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+这样任何人都可以访问和修改了，暂时先这样，后面再补上特定的权限规则。
+
+再刷新页面，我们就能拿到数据了。不过返回的数据有点杂，我们还需要进一步处理，才能拿到我们想要的数据。
+
+
+
 
 # 部署到 firebase
 

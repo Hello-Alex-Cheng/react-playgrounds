@@ -4,11 +4,12 @@ import {
   PieChartOutlined,
   TeamOutlined,
   UserOutlined,
+  PlaySquareOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, Dropdown, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import styles from './index.module.less'
 import { auth } from '../config/firebase'
 import { User } from 'firebase/auth'
@@ -32,10 +33,9 @@ function getItem(
 const items: MenuItem[] = [
   getItem(<Link to='/react-router-dom'>React Router v6</Link>, 'react-router-dom', <PieChartOutlined rev={''} />),
   getItem(<Link to='/valtio'>valtio</Link>, 'valtio', <DesktopOutlined rev={''} />),
-  getItem('User', 'sub1', <UserOutlined rev={''} />, [
-    getItem('Tom', '3'),
-    getItem('Bill', '4'),
-    getItem('Alex', '5'),
+  getItem(<Link to='/movies'>Firebase Movies</Link>, 'movies', <PlaySquareOutlined rev='' />),
+  getItem('Profile', 'sub1', <UserOutlined rev={''} />, [
+    getItem('Hello_AlexCc', '5'),
   ]),
   getItem('Team', 'sub2', <TeamOutlined rev={''} />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
   getItem('Files', '9', <FileOutlined rev={''} />),
@@ -57,6 +57,10 @@ const App: React.FC = () => {
 
     return () => unsubscribe()
   }, [])
+
+  const location = useLocation()
+
+  console.log(location)
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -82,8 +86,7 @@ const App: React.FC = () => {
         </Header>
         <Content style={{ margin: '0 16px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
+            <Breadcrumb.Item>{location.pathname}</Breadcrumb.Item>
           </Breadcrumb>
           <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
             <Outlet></Outlet>

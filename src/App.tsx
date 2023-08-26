@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { connect } from 'react-redux'
 import logo from './logo.svg'
 import LayoutComp from './layout'
@@ -26,8 +26,8 @@ import PrivateRoute from '@/components/PrivateRoute'
 import User from './pages/User'
 import UserDetail from './pages/User/details'
 import NoMatch from './pages/404'
-
 import ValtioDemo from './pages/valtio'
+import FirebaseMovies from './pages/FirebaseMovies'
 
 interface IProps {
   todos: []
@@ -69,6 +69,9 @@ const router = createBrowserRouter(
           </Route>
         </Route>
         <Route path='valtio' element={<ValtioDemo />}></Route>
+        <Route path='movies' element={<Suspense fallback={<h1>Loading...</h1>}>
+          <FirebaseMovies />
+        </Suspense>}></Route>
       </Route>
       <Route path='/login' element={<Auth />} />
       <Route path='*' element={<NoMatch />}></Route>
