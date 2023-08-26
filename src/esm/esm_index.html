@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #content {
+      width: 400px;
+      height: 400px;
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <script src="./esm_index.js" type="module"></script>
+
+  <script type="module">
+    import { hello_world } from './esm_index.js'
+    var moduleA = 'module a'
+    console.log('导入：', hello_world)
+    console.log('window ', window)
+
+    // 阻塞 DOM 加载
+    // alert('module')
+
+
+    // 动态加载
+    if (window.esm) {
+      import('./dynamic-m.js')
+        .then(module => {
+          console.log('动态', module)
+        })
+    }
+  </script>
+  <script>
+    var windowA = 'window a'
+
+    console.log(window.windowA)
+
+    // 阻塞 DOM 加载
+    // alert(1)
+
+    window.onload=function(){
+      var oDiv = document.getElementById("content")
+      oDiv.onkeyup=function(e){
+        this.innerHTML = `<p contenteditable="true">123123</p>`
+      }
+    }
+  </script>
+
+  <!-- <h1>ES Module</h1> -->
+
+  <div id="content" contenteditable="false"></div>
+</body>
+</html>
