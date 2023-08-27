@@ -1,6 +1,8 @@
 # 环境
 - node > v14.16.0
 
+- use firebase tools > v16.13.0
+
 # React 学习项目
 
 - class component
@@ -319,6 +321,15 @@ service cloud.firestore {
     }
   }
 }
+```
+
+# Storage
+存储和检索由用户生成的文件（如图片、音频和视频），无需服务器端代码
+
+```js
+// config/firebase.ts
+import { getStorage } from 'firebase/storage'
+export const storage = getStorage(app)
 ```
 
 # 部署到 firebase
