@@ -7,12 +7,12 @@ import {
   PlaySquareOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Breadcrumb, Layout, Menu, Dropdown, Button } from 'antd';
+import { Breadcrumb, Layout, Menu, Dropdown, Button, message } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './index.module.less'
 import { auth } from '../config/firebase'
-import { User } from 'firebase/auth'
+import { User, signOut } from 'firebase/auth'
 
 const { Header, Content, Footer, Sider } = Layout;
 type MenuItem = Required<MenuProps>['items'][number];
@@ -41,13 +41,28 @@ const items: MenuItem[] = [
   getItem('Files', '9', <FileOutlined rev={''} />),
 ];
 
-const userItems = [
-  getItem('Logout', 'logout'),
-]
-
 const App: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [userinfo, setUserinfo] = useState<User | null>(null)
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  console.log(location)
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      localStorage.removeItem('token')
+      navigate('/login')
+    } catch (error: any) {
+      message.error(error.message)
+    }
+  }
+  
+  const userItems = [
+    getItem(<span onClick={handleLogout}>Logout</span>, 'logout'),
+  ]
+  
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user: User | null) => {
@@ -57,10 +72,6 @@ const App: React.FC = () => {
 
     return () => unsubscribe()
   }, [])
-
-  const location = useLocation()
-
-  console.log(location)
 
   return (
     <Layout style={{ minHeight: '100vh' }}>

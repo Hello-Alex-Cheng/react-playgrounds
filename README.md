@@ -17,6 +17,8 @@
 
 # Firebase
 
+> https://firebase.google.com/docs/reference/js/auth?hl=zh-cn
+
 > npm install -g firebase-tools
 
 ## 将配置项放到项目中
@@ -166,8 +168,158 @@ service cloud.firestore {
 
 再刷新页面，我们就能拿到数据了。不过返回的数据有点杂，我们还需要进一步处理，才能拿到我们想要的数据。
 
+## CRUD
 
+- 查询数据
 
+```js
+import { db } from '@/config/firebase'
+import { getDocs, collection } from 'firebase/firestore'
+
+export default function FirebaseMovies() {
+  // 拿到数据库中的集合 ref 
+  const movieCollectionRef = collection(db, 'movies')
+  const [movieList, setMovieList] = useState<IMoive[]>([])
+
+  const getMovieList = async () => {
+    try {
+      const data = await getDocs(movieCollectionRef)
+      const result = data.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id
+      })) as IMoive[]
+
+      setMovieList(result)
+    } catch (error: any) {
+      message.error(error.message)
+    }
+  }
+
+  useEffect(() => {
+    getMovieList()
+  }, [])
+
+  return (
+    ...
+  )
+}
+```
+
+- 添加数据
+
+```js
+import { db } from '@/config/firebase'
+import { addDoc, collection } from 'firebase/firestore'
+
+export default function FirebaseMovies() {
+  const movieCollectionRef = collection(db, 'movies')
+
+  // values 为表单数据
+  const addMovie = async (values: IMoive) => {
+    try {
+      await addDoc(movieCollectionRef, values)
+      
+      // 添加成功之后，查询列表更新数据
+      getMovieList()
+    } catch (error: any) {
+      message.error(error.message)
+    }
+  }
+
+  return (
+    ...
+  )
+}
+```
+
+- 删除数据
+
+根据 `doc.id` 来删除数据
+
+```js
+import { db } from '@/config/firebase'
+import { doc, deleteDoc } from 'firebase/firestore'
+
+export default function FirebaseMovies() {
+
+  const deleteMovie = (id: string) => {
+    Modal.error({
+      title: '删除',
+      content: '删除后无法恢复，是否要删除？',
+      maskClosable: true,
+      async onOk() {
+        try {
+          const movieDoc = doc(db, 'movies', id)
+          await deleteDoc(movieDoc)
+
+          getMovieList()
+
+          message.success('delete success!')
+        } catch (error: any) {
+          message.error(error.message)
+        }
+      },
+      okText: '确定',
+    })
+  }
+
+  return (
+    ...
+  )
+}
+```
+
+- 更新(编辑)数据
+
+根据 `doc.id` 编辑数据
+
+```js
+import { db } from '@/config/firebase'
+import { doc, updateDoc } from 'firebase/firestore'
+
+const updateMovie = async (id: string) => {
+  try {
+    const movieDoc = doc(db, 'movies', id)
+    await updateDoc(movieDoc, {
+      date: Math.random()
+    })
+
+    getMovieList()
+    message.success('update success!')
+  } catch (error: any) {
+    message.error(error.message)
+  }
+}
+```
+
+## database 权限控制
+
+`wirte` 是 `create`、`update`、`delete`的缩写，这些操作我们可以配置，只有用户登录才能操作
+
+```js
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow write: if request.auth !== null;
+      allow read: if true; // 任何人都可以读取数据
+    }
+  }
+}
+```
+
+还可以更加细粒度一点，我们将 `write` 拆分开，`create` 操作必须携带 userId
+
+```js
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow create: if request.auth !== null && request.auth.uid == request.resouce.data.userId;
+      allow update, delete: if request.auth != null
+      allow read: if true; // 任何人都可以读取数据
+    }
+  }
+}
+```
 
 # 部署到 firebase
 

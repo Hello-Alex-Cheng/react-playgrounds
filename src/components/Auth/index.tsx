@@ -13,7 +13,8 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   signInWithPopup,
-  User
+  User,
+  signInWithEmailAndPassword,
 } from 'firebase/auth'
 
 import { auth, googleProvider } from '../../config/firebase'
@@ -21,18 +22,14 @@ import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { Form_Values, IUserinfo } from './interface'
 
 export default function Auth() {
-  const [render, setRender] = useState(true)
   const navigate = useNavigate()
-
-  const onRememberChanged = (e: CheckboxChangeEvent) => {
-    setRender(e.target.checked)
-  }
+  const [form] = Form.useForm()
 
   const onFinish = async (values: Form_Values) => {
     const { email, password } = values
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password)
-        console.log('sigin res ', res)
+      console.log('sigin res ', res)
       if (res.user) {
         message.success(`注册成功! uid:${res.user.uid}`)
       }
@@ -74,9 +71,27 @@ export default function Auth() {
     }
   }
 
-  useEffect(() => {
-    console.log(auth.currentUser)
-  }, [render])
+  const handleLogin = async () => {
+    const values = form.getFieldsValue()
+    if (!(values.email && values.password)) {
+      return message.error('need email and password!')
+    }
+
+    // SignInWithEmailAndPassword（身份验证、电子邮件、密码）:	使用电子邮件和密码异步登录。
+    try {
+      await signInWithEmailAndPassword(auth, values.email, values.password)
+
+      auth.onAuthStateChanged((user: Iuserinfo | null) => {
+        console.log(user)
+        if (user && user.accessToken) {
+          localStorage.setItem('token', user.accessToken)
+          navigate('/')
+        }
+      })
+    } catch (error: any) {
+      message.error(error.message)
+    }
+  }
 
   const location = useLocation()
   const token = localStorage.getItem('token')
@@ -96,6 +111,7 @@ export default function Auth() {
     }}>
       <Form
         name="Registry"
+        form={form}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         initialValues={{ remember: true }}
@@ -120,7 +136,7 @@ export default function Auth() {
         </Form.Item>
 
         <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
-          <Checkbox onChange={onRememberChanged}>Remember me</Checkbox>
+          <Checkbox>Remember me</Checkbox>
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button
@@ -134,6 +150,11 @@ export default function Auth() {
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
             Sign In
+          </Button>
+        </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" onClick={handleLogin}>
+            Login
           </Button>
         </Form.Item>
 
