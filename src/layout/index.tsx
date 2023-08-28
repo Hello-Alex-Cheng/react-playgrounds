@@ -92,7 +92,7 @@ const App: React.FC = () => {
             placement="bottom"
             arrow
           >
-            <Button size='small'>Hi,{auth.currentUser?.displayName || '请登录'}</Button>
+            <Button size='small'>Hi,{auth.currentUser?.displayName || auth.currentUser?.email || '请登录'}</Button>
           </Dropdown>
         </Header>
         <Content style={{ margin: '0 16px' }}>
