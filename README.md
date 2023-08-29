@@ -1,3 +1,6 @@
+# React Playgrounds
+一个React游乐场，进行实验和探索的性质，玩转 React 生态。
+
 # 环境
 - node > v14.16.0
 
@@ -333,6 +336,10 @@ export const storage = getStorage(app)
 ```
 
 # 部署到 firebase
+
+安装命令行工具 `npn install -g firebase-tools`
+
+然后登录
 
 > firebase login
 >
