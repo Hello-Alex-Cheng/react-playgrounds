@@ -8,6 +8,8 @@
 
 # React 学习项目
 
+> 地址：https://react-firebase-learning-c08af.web.app/react-router-dom/basic/one
+
 - class component
 - ahooks
 - esm
@@ -18,6 +20,7 @@
 - antd
 - Vite
 - `Firebase`
+- swr
 
 
 # Firebase

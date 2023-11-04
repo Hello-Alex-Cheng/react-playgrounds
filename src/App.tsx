@@ -28,6 +28,8 @@ import UserDetail from './pages/User/details'
 import NoMatch from './pages/404'
 import ValtioDemo from './pages/valtio'
 import FirebaseMovies from './pages/FirebaseMovies'
+import SwrDemo from './pages/swr'
+import SwrBasic from './pages/swr/basic'
 
 interface IProps {
   todos: []
@@ -69,9 +71,15 @@ const router = createBrowserRouter(
           </Route>
         </Route>
         <Route path='valtio' element={<ValtioDemo />}></Route>
-        <Route path='movies' element={<Suspense fallback={<h1>Loading...</h1>}>
-          <FirebaseMovies />
-        </Suspense>}></Route>
+        <Route path='movies' element={(
+          <Suspense fallback={<h1>Loading...</h1>}>
+            <FirebaseMovies />
+          </Suspense>
+        )} />
+        <Route path='swr' element={<SwrDemo />}>
+          <Route path='basic' element={<SwrBasic />}></Route>
+          <Route path='special' element={<SwrBasic />}></Route>
+        </Route>
       </Route>
       <Route path='/login' element={<Auth />} />
       <Route path='*' element={<NoMatch />}></Route>

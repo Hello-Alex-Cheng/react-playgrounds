@@ -17,6 +17,7 @@
     "react-redux": "^8.0.7",
     "react-router-dom": "^6.15.0",
     "redux": "^4.2.1",
+    "swr": "^2.2.4",
     "valtio": "^1.11.2"
   },
   "devDependencies": {

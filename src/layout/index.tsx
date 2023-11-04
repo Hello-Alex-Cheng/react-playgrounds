@@ -34,8 +34,9 @@ const items: MenuItem[] = [
   getItem(<Link to='/react-router-dom'>React Router v6</Link>, 'react-router-dom', <PieChartOutlined rev={''} />),
   getItem(<Link to='/valtio'>valtio</Link>, 'valtio', <DesktopOutlined rev={''} />),
   getItem(<Link to='/movies'>Firebase Movies</Link>, 'movies', <PlaySquareOutlined rev='' />),
-  getItem('Profile', 'sub1', <UserOutlined rev={''} />, [
-    getItem('Hello_AlexCc', '5'),
+  getItem('SWR', 'swr', <UserOutlined rev={''} />, [
+    getItem(<Link to='/swr/basic'>基础使用</Link>, 'swr-basic'),
+    getItem(<Link to='/swr/special'>主要特性</Link>, 'swr-special'),
   ]),
   getItem('Team', 'sub2', <TeamOutlined rev={''} />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
   getItem('Files', '9', <FileOutlined rev={''} />),
