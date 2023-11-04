@@ -78,7 +78,13 @@ const App: React.FC = () => {
     <Layout style={{ minHeight: '100vh' }}>
       <Sider collapsible collapsed={collapsed} onCollapse={value => setCollapsed(value)}>
         <div className={styles.logo}>React Learning</div>
-        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+        <Menu
+          theme="dark"
+          selectedKeys={['swr', 'swr-basic']}
+          defaultSelectedKeys={['react-router-dom']}
+          mode="inline"
+          items={items}
+        />
       </Sider>
       <Layout className="site-layout">
         <Header
