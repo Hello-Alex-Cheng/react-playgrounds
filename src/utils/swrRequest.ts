@@ -1,5 +1,6 @@
 import useSWR, { Middleware, SWRHook, Fetcher } from 'swr'
 import useSWRImmutable from 'swr/immutable'
+import useSWRMutation from 'swr/mutation'
 
 const myMiddleware: Middleware = (useSWRNext: SWRHook) => {
   return (key, fetcher, config) => {
@@ -61,9 +62,9 @@ function useCustomSWR(url, config = {}) {
     // errorRetryCount: 2, // 比如将 userId 改为 11，接口返回 404，错误重试请求就会请求 2 次。（两次是不包含最开始出错的请求）
     // errorRetryInterval: 200, // 错误请求时间间隔
 
-    refreshInterval: 500, // 定期重新请求
+    refreshInterval: 5000, // 定期重新请求
     
-    refreshWhenOffline: true, // 离线轮询？？自定义轮询 hooks
+    // refreshWhenOffline: true, // 离线轮询？？自定义轮询 hooks
 
     // focusThrottleInterval: 5000, // 在一段时间内只重新验证一次（以毫秒为单位）
 
@@ -107,3 +108,35 @@ function useImmutableSWR(url, config = {}) {
 export const fetchImmutableUser = (id: number, config = {}) => {
   return useImmutableSWR(`https://jsonplaceholder.typicode.com/users/${id}`, config)
 }
+
+
+
+
+/** @name 只能手动触发的请求 */
+
+// 实现 fetcher
+// 额外的参数可以通过第二个参数 `arg` 传入
+// 在下例中，`arg` 为 `'my_token'`
+async function updateUser(url, { arg }: { arg: string }) {
+
+  console.log('arg ', arg)
+
+  await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${arg}`
+    }
+  })
+}
+
+export const fetchBySWRMutation = (url, config = {}) => {
+
+  const { trigger } = useSWRMutation(url, updateUser, config)
+
+  return trigger
+}
+
+export const fetchPosts = (id) => {
+  return fetchBySWRMutation(`https://jsonplaceholder.typicode.com/users/${id}/posts`, {})
+}
+

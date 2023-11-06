@@ -2,6 +2,7 @@ import React, { Suspense, useState } from 'react'
 import { Button, message } from 'antd'
 import ErrorBoundary from './ErrorBoundary'
 import Baisc from './basic'
+import Trigger from './trigger'
 import styles from './index.module.less'
 
 
@@ -28,8 +29,10 @@ const Swr = () => {
       <Button onClick={() => setShowBasic(!showBasic)}>Toggle</Button>
       <Button onClick={() => {
         // 通知所有拥有这个 key SWR 重新验证
-        // mutate('/api/user')
-      }}>mutate</Button>
+        mutate(`https://jsonplaceholder.typicode.com/users/${1}`, {
+          name: '立即更新的数据'
+        })
+      }}>global mutate</Button>
 
       {
         showBasic ? (
@@ -44,6 +47,8 @@ const Swr = () => {
         )
       }
       
+
+      <Trigger />
     </SWRConfig>
   )
 }
